@@ -56,10 +56,10 @@ We will only support installations which run the most current versions of WordPr
 
 <strong>More information</strong>
 
-Please find more information about Google Ads remarketing on following pages:
+Please find more information about Google Ads Dynamic Remarketing on following pages:
 
-[Dynamic Display Ads](http://www.google.com/ads/innovations/dynamicdisplayads.html)<br>
-[Dynamic Remarketing](https://www.thinkwithgoogle.com/products/dynamic-remarketing.html)<br>
+[Dynamic Display Ad Requirements](https://support.google.com/adspolicy/answer/7181012)<br>
+[Dynamic remarketing for web setup guide](https://support.google.com/google-ads/answer/6077124)<br>
 
 
 == Installation ==

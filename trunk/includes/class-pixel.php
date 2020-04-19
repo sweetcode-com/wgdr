@@ -28,40 +28,27 @@ class WgdrPixel {
 
 		<!-- START Google Code for Dynamic Retargeting --><?php
 
-		// Check if is homepage and set home paramters.
-		// is_home() doesn't work in my setup. I don't know why. I'll use is_front_page() as workaround
-		if ( is_front_page() ) {
-			?>
-
-			<script type="text/javascript">
-                gtag('event', 'page_view', {
-                    'send_to': 'AW-<?php echo esc_html( self::$conversion_id ) ?>',
-                    'ecomm_pagetype': 'home'
-                });
-			</script>
-			<?php
-		} // Check if it is a product category page and set the category parameters.
-		elseif ( is_product_category() ) {
+/*  // removing category for now, as it is difficult to only pass the visible products to the gtag
+		if ( is_product_category() ) {
 			$product_id = get_the_ID();
 			?>
 
 			<script type="text/javascript">
-                gtag('event', 'page_view', {
-                    'send_to': 'AW-<?php echo esc_html( self::$conversion_id ) ?>',
+                gtag('event', 'view_item_list', {
                     'ecomm_pagetype': 'category',
                     'ecomm_category': <?php echo( json_encode( self::get_product_category( $product_id ) ) ); ?>
                 });
 			</script>
 			<?php
-		} // Check if it a search results page and set the searchresults parameters.
-		elseif ( is_search() ) {
+		}
+		else
+*/
+        
+        if ( is_search() ) {
 			?>
 
 			<script type="text/javascript">
-                gtag('event', 'page_view', {
-                    'send_to': 'AW-<?php echo esc_html( self::$conversion_id ) ?>',
-                    'ecomm_pagetype': 'searchresults'
-                });
+                gtag('event', 'view_search_results', {'google_business_vertical': 'retail'});
 			</script>
 			<?php
 		} // Check if it is a product page and set the product parameters.
@@ -75,56 +62,27 @@ class WgdrPixel {
 				return;
 			}
 
+			$product_details['id'] = self::$mc_prefix . ( 0 == self::$product_identifier ? get_the_ID() : $product->get_sku() );
+			$product_details['category'] = self::get_product_category( $product_id );
+			$product_details['list_position'] = 1;
+			$product_details['quantity'] = 1;
+			$product_details['price'] = (float)$product->get_price();
 
-			$product_id_code = '
-		<script type="text/javascript">
-			gtag(\'event\', \'page_view\', {
-			    \'send_to\': \'AW-' . esc_html( self::$conversion_id ) . '\',
-			    \'ecomm_pagetype\': \'product\',
-			    \'ecomm_category\': ' . json_encode( self::get_product_category( $product_id ) ) . ',
-				\'ecomm_prodid\': ' . json_encode( self::$mc_prefix . ( 0 == self::$product_identifier ? get_the_ID() : $product->get_sku() ) ) . ',
-				\'ecomm_totalvalue\': ' . (float)$product->get_price() . '
-			});
-		</script>';
-
-
-			// apply filter to product id
-			$product_id_code = apply_filters( 'wgdr_filter', $product_id_code, 'product_id_code', $product_id );
-
-			echo $product_id_code;
-
-
-// testing different output
-//			$product_array = array(
-//			    'event',
-//                'page_view', array(
-//	                'send_to' => 'AW-1019198954adf',
-//	                'ecomm_pagetype' => 'product',
-//	                'ecomm_category' => array('Posters'),
-//	                'ecomm_prodid' => 'AW-1019198954adf',
-//	                'ecomm_totalvalue'=> 12.353
-//                )
-//            );
-//
-//	        echo ('
-//	    <script type="text/javascript">
-//	        var gtag2 = ' . json_encode($product_array) . ';
-//	        gtag.apply(this, gtag2);
-//	    </script>');
-
+			?>
+            <script type="text/javascript">
+                gtag('event', 'view_item', {
+                    'items': [<?php echo(json_encode($product_details)) ?>]
+                });
+            </script>
+            <?php
 
 		} // Check if it is the cart page and set the cart parameters.
 		elseif ( is_cart() ) {
-			$cartprods = $woocommerce->cart->get_cart();
+			$cart = $woocommerce->cart->get_cart();
 			?>
 
 			<script type="text/javascript">
-                gtag('event', 'page_view', {
-                    'send_to': 'AW-<?php echo esc_html( self::$conversion_id ) ?>',
-                    'ecomm_pagetype': 'cart',
-                    'ecomm_prodid': <?php echo( json_encode( self::get_cart_product_ids( $cartprods ) ) );?>,
-                    'ecomm_totalvalue': <?php echo WC()->cart->get_cart_contents_total(); ?>
-                });
+                gtag('event', 'add_to_cart', {'value': <?php echo WC()->cart->get_cart_contents_total(); ?>, 'items': <?php echo(json_encode(self::get_cart_items($cart))) ?>});
 			</script>
 			<?php
 		} // Check if it the order received page and set the according parameters
@@ -140,33 +98,16 @@ class WgdrPixel {
 			if ( ! $order->has_status( 'failed' ) ) {
 				//if ( ! $order->has_status( 'failed' ) && ( ( get_post_meta( $order->get_order_number(), '_WGDR_conversion_pixel_fired', true ) == "true" ) ) ) {
 
-
 				?>
 
 				<script type="text/javascript">
-                    gtag('event', 'page_view', {
-                        'send_to': 'AW-<?php echo esc_html( self::$conversion_id ) ?>',
-                        'ecomm_pagetype': 'purchase',
-                        'ecomm_prodid': <?php echo( json_encode( self::get_content_ids( $order ) ) ); ?>,
-                        'ecomm_totalvalue': <?php echo $order_subtotal; ?>
-
-                    });
+                    gtag('event', 'purchase', {'value': <?php echo $order_subtotal; ?>, 'items': <?php echo(json_encode(self::get_order_items($order))) ?>});
 				</script>
 				<?php
 				update_post_meta( $order->get_order_number(), '_WGDR_conversion_pixel_fired', 'true' );
 			} // end if order status
-		} // For all other pages set the parameters for other.
-		else {
-			?>
-
-			<script type="text/javascript">
-                gtag('event', 'page_view', {
-                    'send_to': 'AW-<?php echo esc_html( self::$conversion_id ) ?>',
-                    'ecomm_pagetype': 'other'
-                });
-			</script>
-			<?php
 		}
+
 
 		?>
 
@@ -199,33 +140,43 @@ class WgdrPixel {
 	}
 
 	// get an array with all cart product ids
-	public static function get_cart_product_ids( $cartprods ) {
+	public static function get_cart_items( $cart ) {
 
+		// error_log(print_r($cart, true));
 		// initiate product identifier array
-		$cartprods_items = array();
+		$cart_items = array();
+		$item_details = array();
 
 		// go through the array and get all product identifiers
-		foreach ( (array) $cartprods as $entry ) {
+		foreach ( (array) $cart as $item ) {
+
+			$product = wc_get_product( $item['product_id'] );
 
 			// depending on setting use product IDs or SKUs
 			if ( 0 == self::$product_identifier ) {
 
 				// fill the array with all product IDs
-				array_push( $cartprods_items, self::$mc_prefix . $entry['product_id'] );
+                $item_details['id'] = self::$mc_prefix . $item['product_id'];
 
 			} else {
 
 				// fill the array with all product SKUs
-				$product = wc_get_product( $entry['product_id'] );
-				array_push( $cartprods_items, self::$mc_prefix . $product->get_sku() );
-
+				$product = wc_get_product( $item['product_id'] );
+				$item_details['id'] = self::$mc_prefix . $product->get_sku();
 			}
+
+			$item_details['quantity'] = (int)$item['quantity'];
+			$item_details['price']    = (int)$product->get_price();
+			$item_details['google_business_vertical'] = 'retail';
+
+			array_push($cart_items, $item_details);
+
 		}
 
 		// apply filter to the $cartprods_items array
-		$cartprods_items = apply_filters( 'wgdr_filter', $cartprods_items, 'cartprods_items' );
+		$cart_items = apply_filters( 'wgdr_filter', $cart_items, 'cart_items' );
 
-		return $cartprods_items;
+		return $cart_items;
 	}
 
 	// get an array with all product ids in the order
@@ -254,6 +205,42 @@ class WgdrPixel {
 
 		// apply filter to the $order_items_array array
 		$order_items_array = apply_filters( 'wgdr_filter', $order_items_array, 'order_items_array' );
+
+		return $order_items_array;
+	}
+
+	private static function get_order_items($order){
+
+		$order_items       = $order->get_items();
+		$order_items_array = array();
+
+
+		foreach ( (array) $order_items as $item ) {
+			//array_push( $order_items_array, self::$mc_prefix . $item['product_id'] );
+
+			$product = wc_get_product( $item['product_id'] );
+
+			$item_details_array = array();
+			$identifier   = '';
+
+			// depending on setting use product IDs or SKUs
+			if ( 0 == self::$product_identifier ) {
+
+				$item_details_array['id'] = self::$mc_prefix . $item['product_id'];
+			} else {
+
+				$product = wc_get_product( $item['product_id'] );
+				$item_details_array['id'] = self::$mc_prefix . $product->get_sku();
+			}
+
+
+			$item_details_array['quantity'] = (int)$item['quantity'];
+			$item_details_array['price']    = (int)$product->get_price();
+			$item_details_array['google_business_vertical'] = 'retail';
+
+			array_push($order_items_array, $item_details_array);
+
+		}
 
 		return $order_items_array;
 	}
