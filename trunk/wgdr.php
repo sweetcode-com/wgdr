@@ -5,18 +5,16 @@
  * Author:       Wolf+Bär Agency
  * Plugin URI:   https://wordpress.org/plugins/woocommerce-google-dynamic-retargeting-tag/
  * Author URI:   https://wolfundbaer.ch
- * Version:      1.7.16
+ * Version:      1.8.0
  * License:      GPLv2 or later
  * Text Domain:  woocommerce-google-dynamic-retargeting-tag
  * WC requires at least: 3.2.0
  * WC tested up to: 4.0
  */
 
-// TODO JavaScript add-to-cart event
 // TODO add validation for the input fields. Try to use jQuery validation in the form.
 // TODO add sanitization to the output
 // TODO in case Google starts to use alphabetic characters in the conversion ID, output the conversion ID with ''
-// TODO structure plugin into subdirectories and files
 // TODO create unit tests
 
 
@@ -40,11 +38,17 @@ class WGDR {
 
 		// preparing the DB check and upgrade routine
 		require_once plugin_dir_path( __FILE__ ) . 'includes/class-db-upgrade.php';
-		require_once plugin_dir_path( __FILE__ ) . 'includes/class-cookie-consent-management.php';
 
 		// running the DB updater
 		// add_action( 'plugins_loaded', 'db_upgrade' );
 		WgdrDbUpgrade::run_options_db_upgrade();
+
+		$this->runCookieConsentManagement();
+	}
+
+	public function runCookieConsentManagement(){
+
+		require_once plugin_dir_path( __FILE__ ) . 'includes/class-cookie-consent-management.php';
 
 		// load the cookie consent management functions
 		WgdrCookieConsentManagement::setPluginPrefix( self::PLUGIN_PREFIX );
@@ -68,9 +72,10 @@ class WGDR {
 		$this->wgdr_options_init();
 
 		require_once plugin_dir_path( __FILE__ ) . 'admin/class-admin.php';
-		require_once plugin_dir_path( __FILE__ ) . 'includes/class-ask-for-rating.php';
 		require_once plugin_dir_path( __FILE__ ) . 'includes/class-gtag.php';
-		require_once plugin_dir_path( __FILE__ ) . 'includes/class-pixel.php';
+		require_once plugin_dir_path( __FILE__ ) . 'includes/class-pixel-v2.php';
+		require_once plugin_dir_path( __FILE__ ) . 'includes/notifications/class-ask-for-rating.php';
+		require_once plugin_dir_path( __FILE__ ) . 'includes/notifications/class-v2-pixel-info.php';
 
         // display admin views
 		WgdrAdmin::init();
@@ -82,10 +87,16 @@ class WGDR {
 		add_action( 'plugins_loaded', array( $this, 'run_retargeting_for_visitor' ) );
 
         // ask visitor for rating
+		// error_log('init ask');
 		WgdrAskForRating::init();
 
+		// show v2 pixel info
+		WgdrV2PixelInfo::init();
+
 		// Register style sheet
-		add_action( 'wp_enqueue_scripts', array( $this, 'register_plugin_styles' ) );
+		// was necessary to fix some styling issues caused by the pixel on some themes
+		// removed it, as the new pixel (version Q4 2019) probably doesn't cause that issue anymore
+		// add_action( 'wp_enqueue_scripts', array( $this, 'register_plugin_styles' ) );
 	}
 
 	// validate our options
@@ -193,7 +204,7 @@ class WGDR {
 				add_action( 'wp_head', 'WgdrGtag::inject' );
 			}
 
-			add_action( 'wp_footer', 'WgdrPixel::google_dynamic_retargeting_code' );
+			add_action( 'wp_footer', 'WgdrPixelV2::google_dynamic_retargeting_code' );
 		}
 	}
 

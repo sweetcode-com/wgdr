@@ -4,7 +4,6 @@
  * Version:  1.0
  */
 
-// TODO implement a filter for external Cookie Consent Management plugins to deactivate this plugin
 // TODO implement CCM https://wordpress.org/plugins/uk-cookie-consent/ (200k) -> doesn't allow cookies to be disabled
 // TODO impelemnt CCM https://wordpress.org/plugins/cookiebot/ (20k) -> no cookie or filter based third party tracking opt out
 // TODO impelemnt CCM https://wordpress.org/plugins/responsive-cookie-consent/ (3k)
@@ -28,7 +27,10 @@ class WgdrCookieConsentManagement {
 
 		$thirdPartyCookiePrevention = false;
 
+		// deprecated
 		$thirdPartyCookiePrevention = apply_filters( self::$pluginPrefix . 'third_party_cookie_prevention', $thirdPartyCookiePrevention );
+
+		$thirdPartyCookiePrevention = apply_filters( self::$pluginPrefix . 'cookie_prevention', $thirdPartyCookiePrevention );
 
 		// check if the Moove third party cookie prevention is on
 		if (self::is_moove_third_party_cookie_prevention_active() ){
@@ -43,6 +45,13 @@ class WgdrCookieConsentManagement {
 		// check if the Cooke Law Info third party cookie prevention is on
 		if (self::is_cookie_law_info_third_party_cookie_prevention_active() ){
 			$thirdPartyCookiePrevention = true;
+		}
+
+		// check if marketing cookies have been approved by Borlabs
+		if (function_exists('BorlabsCookieHelper')){
+			if (BorlabsCookieHelper()->gaveConsent('marketing')){
+				$cookiePrevention = false;
+			}
 		}
 
 		return $thirdPartyCookiePrevention;

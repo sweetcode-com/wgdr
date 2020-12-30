@@ -29,21 +29,20 @@ class WgdrAskForRating {
 
             });
 		</script> <?php
-
 	}
 
 	// server side php ajax handler for the admin rating notice
 	public static function ajax_rating_notice_handler() {
 
-		error_log( ' running php handler ' );
+		// error_log( 'running php handler' );
+
+		$user_meta = get_user_meta( get_current_user_id(), 'wgdr_admin_notice_user_meta', true );
 
 		// prepare the data that needs to be written into the user meta
-		$wgdr_admin_notice_user_meta = array(
-			'date-dismissed' => date( 'Y-m-d' ),
-		);
+		$user_meta['date-dismissed'] = date( 'Y-m-d' );
 
 		// update the user meta
-		update_user_meta( get_current_user_id(), 'wgdr_admin_notice_user_meta', $wgdr_admin_notice_user_meta );
+		update_user_meta( get_current_user_id(), 'wgdr_admin_notice_user_meta', $user_meta );
 
 		wp_die(); // this is required to terminate immediately and return a proper response
 	}
@@ -51,27 +50,39 @@ class WgdrAskForRating {
 	// only ask for rating if not asked before or longer than a year
 	public static function ask_for_rating_notices_if_not_asked_before() {
 
+	    // error_log('run ask');
+
 		// get user meta data for this plugin
-		$user_meta = get_user_meta( get_current_user_id(), 'wgdr_admin_notice_user_meta' );
+		$user_meta = get_user_meta( get_current_user_id(), 'wgdr_admin_notice_user_meta', true );
+
+		if(! isset($user_meta['first-check'])){
+
+		    $user_meta = [];
+			$user_meta['first-check'] = date( 'Y-m-d' );
+
+			update_user_meta( get_current_user_id(), 'wgdr_admin_notice_user_meta', $user_meta );
+		}
 
 		// check if there is already a saved value in the user meta
-		if ( isset( $user_meta[0]['date-dismissed'] ) ) {
-
-			$date_1 = date_create( $user_meta[0]['date-dismissed'] );
-			$date_2 = date_create( date( 'Y-m-d' ) );
-
-			// calculate day difference between the dates
-			$interval = date_diff( $date_1, $date_2 );
-
-			// check if the date difference is more than 360 days
-			if ( 360 < $interval->format( '%a' ) ) {
-				self::ask_for_rating_notices();
-			}
-
-		} else {
+		if ( ! isset( $user_meta['date-dismissed'] ) && self::is_installation_older_than_30_days($user_meta)) {
 
 			self::ask_for_rating_notices();
 		}
+	}
+
+	public static function is_installation_older_than_30_days($user_meta) {
+
+	    $date_1 = date_create( $user_meta['first-check'] );
+	    $date_2 = date_create( date( 'Y-m-d' ) );
+
+	    // calculate day difference between the dates
+        $interval = date_diff( $date_1, $date_2 );
+
+        if ($interval->format( '%a' ) > 30) {
+            return true;
+        } else {
+            return false;
+        }
 	}
 
 	// show an admin notice to ask for a plugin rating
@@ -110,7 +121,4 @@ class WgdrAskForRating {
 		<?php
 
 	}
-
-
-
 }
