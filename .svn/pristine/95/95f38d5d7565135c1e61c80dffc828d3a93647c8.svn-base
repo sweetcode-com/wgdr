@@ -5,7 +5,7 @@
  * Author:       Wolf+Bär Agency
  * Plugin URI:   https://wordpress.org/plugins/woocommerce-google-dynamic-retargeting-tag/
  * Author URI:   https://wolfundbaer.ch
- * Version:      1.7.17
+ * Version:      1.7.16
  * License:      GPLv2 or later
  * Text Domain:  woocommerce-google-dynamic-retargeting-tag
  * WC requires at least: 3.2.0
@@ -21,6 +21,44 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
+
+//if ( ! function_exists( 'wgdrt_fs' ) ) {
+//	// Create a helper function for easy SDK access.
+//	function wgdrt_fs() {
+//		global $wgdrt_fs;
+//
+//		if ( ! isset( $wgdrt_fs ) ) {
+//			// Include Freemius SDK.
+//			require_once dirname(__FILE__) . '/freemius/start.php';
+//
+//			$wgdrt_fs = fs_dynamic_init( array(
+//				'id'                  => '7516',
+//				'slug'                => 'woocommerce-google-dynamic-retargeting-tag',
+//				'type'                => 'plugin',
+//				'public_key'          => 'pk_3d22dcc5d0788d6aa100a22f237be',
+//				'is_premium'          => false,
+//				'has_addons'          => false,
+//				'has_paid_plans'      => false,
+//				'menu'                => array(
+//					'slug'           => 'woocommerce-google-dynamic-retargeting-tag',
+//					'account'        => false,
+//					'contact'        => false,
+//					'support'        => false,
+//					'parent'         => array(
+//						'slug' => 'woocommerce',
+//					),
+//				),
+//			) );
+//		}
+//
+//		return $wgdrt_fs;
+//	}
+//
+//	// Init Freemius.
+//	wgdrt_fs();
+//	// Signal that SDK was initiated.
+//	do_action( 'wgdrt_fs_loaded' );
+//}
 
 define( 'PLUGIN_PREFIX', 'wgdr_' );
 
