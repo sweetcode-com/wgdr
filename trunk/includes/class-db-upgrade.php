@@ -8,21 +8,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-class WgdrDbUpgrade {
+class WGDR_DB_Upgrade {
 
-	public static $options_db_name = 'wgdr_plugin_options';
+	protected $options_db_name = 'wgdr_plugin_options';
 
-	public static function run_options_db_upgrade() {
+	public function __construct() {
+	}
+
+	public function run_options_db_upgrade() {
 
 		// determine version and run version specific upgrade function
 		// check if options db version zero by looking if the old entries are still there.
 		if ( ( get_option( 'wgdr_plugin_options_1' ) ) or ( get_option( 'wgdr_plugin_options_2' ) ) or ( get_option( 'wgdr_plugin_options_3' ) ) ) {
 			// error_log( 'current db version is zero ' );
-			self::upgrade_options_db_from_zero_to_1_point_zero();
+			$this->upgrade_options_db_from_zero_to_1_point_zero();
 		}
 	}
 
-	public static function upgrade_options_db_from_zero_to_1_point_zero() {
+	public function upgrade_options_db_from_zero_to_1_point_zero() {
 
 		$option_name_1 = 'wgdr_plugin_options_1';
 		$option_name_2 = 'wgdr_plugin_options_2';
@@ -55,7 +58,7 @@ class WgdrDbUpgrade {
 
 		// store new option array into the options table
 
-		update_option( self::$options_db_name, $options_array );
+		update_option( $this->options_db_name, $options_array );
 
 		// delete old options
 		// only on single site

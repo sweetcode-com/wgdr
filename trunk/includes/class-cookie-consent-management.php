@@ -4,6 +4,7 @@
  * Version:  1.0
  */
 
+// TODO implement a filter for external Cookie Consent Management plugins to deactivate this plugin
 // TODO implement CCM https://wordpress.org/plugins/uk-cookie-consent/ (200k) -> doesn't allow cookies to be disabled
 // TODO impelemnt CCM https://wordpress.org/plugins/cookiebot/ (20k) -> no cookie or filter based third party tracking opt out
 // TODO impelemnt CCM https://wordpress.org/plugins/responsive-cookie-consent/ (3k)
@@ -18,51 +19,41 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-class WgdrCookieConsentManagement {
+class WGDR_Cookie_Consent_Management {
 
-	public static $pluginPrefix;
+	private $pluginPrefix;
 
 	// check if third party cookie prevention is active
-	public static function is_third_party_cookie_prevention_active(){
+	public function is_third_party_cookie_prevention_active(){
 
 		$thirdPartyCookiePrevention = false;
 
-		// deprecated
-		$thirdPartyCookiePrevention = apply_filters( self::$pluginPrefix . 'third_party_cookie_prevention', $thirdPartyCookiePrevention );
-
-		$thirdPartyCookiePrevention = apply_filters( self::$pluginPrefix . 'cookie_prevention', $thirdPartyCookiePrevention );
+		$thirdPartyCookiePrevention = apply_filters( $this->pluginPrefix . 'third_party_cookie_prevention', $thirdPartyCookiePrevention );
 
 		// check if the Moove third party cookie prevention is on
-		if (self::is_moove_third_party_cookie_prevention_active() ){
+		if ($this->is_moove_third_party_cookie_prevention_active() ){
 			$thirdPartyCookiePrevention = true;
 		}
 
 		// check if the Cooke Notice Plugin third party cookie prevention is on
-		if (self::is_cookie_notice_plugin_third_party_cookie_prevention_active() ){
+		if ($this->is_cookie_notice_plugin_third_party_cookie_prevention_active() ){
 			$thirdPartyCookiePrevention = true;
 		}
 
 		// check if the Cooke Law Info third party cookie prevention is on
-		if (self::is_cookie_law_info_third_party_cookie_prevention_active() ){
+		if ($this->is_cookie_law_info_third_party_cookie_prevention_active() ){
 			$thirdPartyCookiePrevention = true;
-		}
-
-		// check if marketing cookies have been approved by Borlabs
-		if (function_exists('BorlabsCookieHelper')){
-			if (BorlabsCookieHelper()->gaveConsent('marketing')){
-				$cookiePrevention = false;
-			}
 		}
 
 		return $thirdPartyCookiePrevention;
 	}
 
-	public static function setPluginPrefix($name){
-		self::$pluginPrefix = $name;
+	public function setPluginPrefix($name){
+		$this->pluginPrefix = $name;
 	}
 
 	// return the cookie contents, if the cookie is set
-	public static function getCookie($cookie_name){
+	public function getCookie($cookie_name){
 
 		if( isset($_COOKIE[$cookie_name]) ){
 			return $_COOKIE[$cookie_name];
@@ -73,9 +64,9 @@ class WgdrCookieConsentManagement {
 
 	// check if the Cookie Law Info plugin prevents third party cookies
 	// https://wordpress.org/plugins/cookie-law-info/
-	public static function is_cookie_law_info_third_party_cookie_prevention_active(){
+	public function is_cookie_law_info_third_party_cookie_prevention_active(){
 
-		$cookieConsentManagementcookie = self::getCookie('viewed_cookie_policy' );
+		$cookieConsentManagementcookie = $this->getCookie('viewed_cookie_policy' );
 
 		if ( $cookieConsentManagementcookie == 'no' ){
 			return true;
@@ -86,9 +77,9 @@ class WgdrCookieConsentManagement {
 
 	// check if the Cookie Notice Plugin prevents third party cookies
 	// https://wordpress.org/plugins/cookie-notice/
-	public static function is_cookie_notice_plugin_third_party_cookie_prevention_active(){
+	public function is_cookie_notice_plugin_third_party_cookie_prevention_active(){
 
-		$cookieConsentManagementcookie = self::getCookie('cookie_notice_accepted' );
+		$cookieConsentManagementcookie = $this->getCookie('cookie_notice_accepted' );
 
 		if ( $cookieConsentManagementcookie == 'false' ){
 			return true;
@@ -99,7 +90,7 @@ class WgdrCookieConsentManagement {
 
 	// check if the Moove GDPR Cookie Compliance prevents third party cookies
 	// https://wordpress.org/plugins/gdpr-cookie-compliance/
-	public static function is_moove_third_party_cookie_prevention_active(){
+	public function is_moove_third_party_cookie_prevention_active(){
 		if( isset( $_COOKIE['moove_gdpr_popup']) ){
 
 			$cookieConsentManagementcookie = $_COOKIE['moove_gdpr_popup'];

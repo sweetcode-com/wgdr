@@ -3,8 +3,8 @@ Contributors: alekv
 Donate link: https://wolfundbaer.ch/donations/
 Tags: woocommerce, google, adwords, google ads, dynamic remarketing, dynamic retargeting, dynamic, remarketing, retargeting, woocommerce dynamic remarketing, woocommerce dynamic retargeting, adwords remarketing, adwords retargeting, adwords dynamic retargeting, adwords dynamic remarketing
 Requires at least: 3.1
-Tested up to: 5.3
-Stable tag: 1.7.15
+Tested up to: 5.6
+Stable tag: 1.7.16
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,8 +23,8 @@ Do you have a WooCommerce shop and want to run dynamic remarketing campaigns wit
 
 <strong>Highlights of this plugin</strong>
 
-* Very easy to install
-* Very accurate. Several methods have been build in to avoid tracking of shop managers, deduplication of purchases, etc.
+* Easy to install
+* Accurate. Several methods have been build in to avoid tracking of shop managers, deduplication of purchases, etc.
 
 <strong>Cookie Consent Management</strong>
 
@@ -136,6 +136,13 @@ We will need some data to be able to help you.
 2. Validate the configuration of the plugin with the Google Tag Assistant
 
 == Changelog ==
+
+= 1.7.16 =
+
+* Info: Tested up to WP 5.6
+* Tweak: Added gtag config instruction if gtag insertion is disabled
+* Tweak: Disabled ratings request
+
 = 1.7.15 =
 * Info: Tested up to WP 5.3
 = 1.7.14 =

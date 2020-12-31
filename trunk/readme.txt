@@ -4,7 +4,7 @@ Donate link: https://wolfundbaer.ch/donations/
 Tags: woocommerce, google, adwords, google ads, dynamic remarketing, dynamic retargeting, dynamic, remarketing, retargeting, woocommerce dynamic remarketing, woocommerce dynamic retargeting, adwords remarketing, adwords retargeting, adwords dynamic retargeting, adwords dynamic remarketing
 Requires at least: 3.1
 Tested up to: 5.3
-Stable tag: 1.8.0
+Stable tag: 1.7.15
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,18 +28,17 @@ Do you have a WooCommerce shop and want to run dynamic remarketing campaigns wit
 
 <strong>Cookie Consent Management</strong>
 
-The plugin uses data from several Cookie Consent Management plugins to manage approvals and disapprovals for injection of marketing pixels.
+The plugin uses data from several Cookie Consent Management plugins to avoid injecting the tracking pixel, in case a visitor doesn't want to be tracked by third party pixels.
 
 It works with the following Cookie Consent Management plugins:
 
 * [Cookie Notice](https://wordpress.org/plugins/cookie-notice/)
 * [Cookie Law Info](https://wordpress.org/plugins/cookie-law-info/)
 * [GDPR Cookie Compliance](https://wordpress.org/plugins/gdpr-cookie-compliance/)
-* [Borlabs Cookie](https://borlabs.io/borlabs-cookie/)
 
-It is also possible for developers of Cookie Consent Management plugins to deactivate our plugin with a filter:
+It is also possible for developers of Cookie Consent Management plugins to deactivate our plugin with a filter, in case a visitor opts out of third party pixel tracking. Simply use the following code:
 
-`add_filter( 'wgdr_cookie_prevention', '__return_true' );`
+`add_filter( 'wgdr_third_party_cookie_prevention', '__return_true' );`
 
 <strong>Installation support</strong>
 
@@ -57,10 +56,10 @@ We will only support installations which run the most current versions of WordPr
 
 <strong>More information</strong>
 
-Please find more information about Google Ads Dynamic Remarketing on following pages:
+Please find more information about Google Ads remarketing on following pages:
 
-[Dynamic Display Ad Requirements](https://support.google.com/adspolicy/answer/7181012)<br>
-[Dynamic remarketing for web setup guide](https://support.google.com/google-ads/answer/6077124)<br>
+[Dynamic Display Ads](http://www.google.com/ads/innovations/dynamicdisplayads.html)<br>
+[Dynamic Remarketing](https://www.thinkwithgoogle.com/products/dynamic-remarketing.html)<br>
 
 
 == Installation ==
@@ -137,14 +136,6 @@ We will need some data to be able to help you.
 2. Validate the configuration of the plugin with the Google Tag Assistant
 
 == Changelog ==
-
-= 1.8.0 =
-* New: Added support for categories
-* Tweak: Code cleanup
-* Tweak: Implemented new Google script tags
-* Tweak: Removed css
-* Tweak: Renamed cookie consent filter
-
 = 1.7.15 =
 * Info: Tested up to WP 5.3
 = 1.7.14 =
