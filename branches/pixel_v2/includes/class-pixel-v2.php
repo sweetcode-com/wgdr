@@ -34,7 +34,7 @@ class WgdrPixelV2 {
 		self::inject_add_to_cart_script();
 
 		if ( is_product_category() ) {
-			error_log(print_r($wp_query, true));
+//			error_log(print_r($wp_query, true));
 			?>
 
 			<script type="text/javascript">
@@ -99,7 +99,11 @@ class WgdrPixelV2 {
 				?>
 
 				<script type="text/javascript">
-                    gtag('event', 'purchase', { 'send_to': 'AW-<?php echo esc_html( self::$conversion_id ) ?>', 'value': <?php echo $order_subtotal; ?>, 'items': <?php echo(json_encode(self::get_order_items($order))) ?>});
+                    gtag('event', 'purchase', {
+                        'send_to': 'AW-<?php echo esc_html( self::$conversion_id ) ?>',
+                        'value': <?php echo $order_subtotal; ?>,
+                        'items': <?php echo(json_encode(self::get_order_items($order))) ?>
+                    });
 				</script>
 				<?php
 				update_post_meta( $order->get_order_number(), '_WGDR_conversion_pixel_fired', 'true' );

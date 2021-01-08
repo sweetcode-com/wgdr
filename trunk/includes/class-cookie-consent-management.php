@@ -28,7 +28,7 @@ class WGDR_Cookie_Consent_Management {
 
 		$thirdPartyCookiePrevention = false;
 
-		$thirdPartyCookiePrevention = apply_filters( $this->pluginPrefix . 'third_party_cookie_prevention', $thirdPartyCookiePrevention );
+        $thirdPartyCookiePrevention = apply_filters( $this->pluginPrefix . 'third_party_cookie_prevention', $thirdPartyCookiePrevention );
 
 		// check if the Moove third party cookie prevention is on
 		if ($this->is_moove_third_party_cookie_prevention_active() ){

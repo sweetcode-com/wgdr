@@ -131,3 +131,6 @@ GitHub.sublime-settings
 *.tmproj
 *.tmproject
 tmtags
+
+# SVN
+/tags/
